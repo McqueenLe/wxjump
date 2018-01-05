@@ -16,12 +16,16 @@ public class Hack {
 
     public static void main(String... strings) {
 
+    	// 获取根目录路径
         String root = Hack.class.getResource("/").getPath();
         System.out.println("root: " + root);
+        // 创建图片储存路径
         File srcDir = new File(root, "imgs/input");
         srcDir.mkdirs();
         System.out.println("srcDir: " + srcDir.getAbsolutePath());
+        // 获取当前所在位置
         MyPosFinder myPosFinder = new MyPosFinder();
+        // 创建下一个目标的中心位置的对象
         NextCenterFinder nextCenterFinder = new NextCenterFinder();
         WhitePointFinder whitePointFinder = new WhitePointFinder();
         Random random=new Random();
@@ -30,22 +34,30 @@ public class Hack {
             try {
                 File file = new File(srcDir, i + ".png");
                 if (file.exists()) {
+                	// jvm退出时删除文件，不会立即执行
                     file.deleteOnExit();
                 }
+                
+                // 执行adb截图命令
                 Runtime.getRuntime().exec(ADB_PATH + " shell /system/bin/screencap -p /sdcard/screenshot.png");
                 Thread.sleep(1_000);
+                // 用adb获取截图
                 Runtime.getRuntime().exec(ADB_PATH + " pull /sdcard/screenshot.png " + file.getAbsolutePath());
                 Thread.sleep(1_000);
-
                 System.out.println("screenshot, file: " + file.getAbsolutePath());
+                
+                // 加载图片到内存
                 BufferedImage image = ImgLoader.load(file.getAbsolutePath());
+                // 计算弹跳系数
                 if (jumpRatio == 0) {
                     jumpRatio = JUMP_RATIO * 1080 / image.getWidth();
                 }
+                // 根据截图获取我的当前位置
                 int[] myPos = myPosFinder.find(image);
                 if (myPos != null) {
                     System.out.println("find myPos, succ, (" + myPos[0] + ", " + myPos[1] + ")");
                     int[] excepted = {myPos[0] - 35, myPos[0] + 35};
+                    // 根据图片获取下一个中心位置
                     int[] nextCenter = nextCenterFinder.find(image, excepted, myPos[1]);
                     if (nextCenter == null || nextCenter[0] == 0) {
                         System.err.println("find nextCenter, fail");
@@ -67,10 +79,12 @@ public class Hack {
                             }
                         }
                         System.out.println("find nextCenter, succ, (" + centerX + ", " + centerY + ")");
-                        int distance = (int) (Math.sqrt((centerX - myPos[0]) * (centerX - myPos[0]) + (centerY - myPos[1]) * (centerY - myPos[1])) * jumpRatio);
-                        System.out.println("distance: " + distance);
-                        System.out.println(ADB_PATH + " shell input swipe 400 400 400 400 " + distance);
-                        Runtime.getRuntime().exec(ADB_PATH + " shell input swipe 300 300 400 400 " + distance);
+                        
+                        // 滑动毫秒数
+                        int timeMills = (int) (Math.sqrt((centerX - myPos[0]) * (centerX - myPos[0]) + (centerY - myPos[1]) * (centerY - myPos[1])) * jumpRatio);
+                        System.out.println("distance: " + timeMills);
+                        System.out.println(ADB_PATH + " shell input swipe 400 400 400 400 " + timeMills);
+                        Runtime.getRuntime().exec(ADB_PATH + " shell input swipe 300 300 400 400 " + timeMills);
                     }
                 } else {
                     System.err.println("find myPos, fail");

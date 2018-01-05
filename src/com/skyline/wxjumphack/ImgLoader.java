@@ -7,11 +7,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * Created by chenliang on 2017/12/31.
- */
 public class ImgLoader {
 
+	/**
+	 * 加载图片到内存
+	 * @param path
+	 * @return
+	 * @throws IOException
+	 */
     public static BufferedImage load(String path) throws IOException {
         BufferedImage image = null;
         InputStream is = null;

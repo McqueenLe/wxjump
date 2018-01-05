@@ -10,9 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
 
-/**
- * Created by chenliang on 2018/1/1.
- */
 public class NextCenterFinder {
 
 

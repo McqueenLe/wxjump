@@ -4,9 +4,6 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
-/**
- * Created by chenliang on 2017/12/31.
- */
 public class WhitePointFinder {
 
     public static final int TARGET = 245;
@@ -16,6 +13,7 @@ public class WhitePointFinder {
             return null;
         }
 
+        // 获取截图的宽高
         int width = image.getWidth();
         int height = image.getHeight();
 
